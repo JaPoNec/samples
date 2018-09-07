@@ -21,24 +21,27 @@ class CurrencyPair extends Component {
     this.getRates(this.props.pair)
   }
 
-  getRates(pair) {
-    if(pair !== undefined) {
-      fetchJson(`/rates?currencyPairIds[]=${pair}`)
+  getPairsQuery(currencyPairs) {
+    return Object.keys(currencyPairs).map(pair => `currencyPairIds[]=${pair}`).join("&")
+  }
+
+  getRates() {
+      fetchJson(`/rates?${this.getPairsQuery(this.props.currencyPairs)}`)
       .then(data => {
         const { currencyPairs } = this.props;
 
         if(data && data.rates !== undefined) {
-          const prev = (currencyPairs[pair][2] !== undefined) && currencyPairs[pair][2].rate;  
-          const next = data.rates[pair];
-          
-          this.props.setRates(next, pair);
-          this.getTrend(prev, next);
+          Object.keys(data.rates).map(pair => {
+            const prev = (currencyPairs[pair][2] !== undefined) && currencyPairs[pair][2].rate;  
+            const next = data.rates[pair];
+
+            this.setState({pair: {prev, next}});
+          }
         }
       })
       .catch(error => console.log(error.message))
 
       setTimeout(() => this.getRates(pair), interval)
-    }
   }
 
   getTrend(prev, next) {
@@ -73,17 +76,8 @@ class CurrencyPair extends Component {
     };
 
     return (
-      <div style={card}>
-        {`${currencyPairs[pair][0].name} / ${currencyPairs[pair][1].name}`}
-        <div>
-          {
-            (currencyPairs[pair][2] !== undefined && currencyPairs[pair][2].rate !== undefined)
-            && currencyPairs[pair][2].rate
-          }
-        </div>
-        <div style={rateTrend[trend]}>
-          {(trend !== undefined) ? trend : "stagnating"}
-        </div>
+      <div>
+        {Object.keys{}}
       </div>
     )
   }

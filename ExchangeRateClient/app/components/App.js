@@ -6,6 +6,9 @@ import { setCurrencyPairs, setTogglePairs } from '../store/actions';
 // components
 import CurrencyPair from './CurrencyPair';
 import CurrencySelector from './CurrencySelector';
+import fetchJson from '../utils/fetchJson';
+import CurrencyPairs from './CurrencyPairs';
+
 
 class App extends Component {
   constructor(props) {
@@ -28,8 +31,7 @@ class App extends Component {
   };
 
   getPairs() {
-    fetch(endpoint + "/configuration")
-    .then(response => response.json())
+    fetchJson("/configuration")
     .then(data => {
         this.props.setCurrencyPairs(data.currencyPairs);
         const togglePairs = {};
@@ -54,10 +56,8 @@ class App extends Component {
     return (
       (currencyPairs !== undefined && togglePairs !== undefined) 
       ? <div>
-          {<CurrencySelector />}
-          <div style={cards}>
-            {Object.keys(currencyPairs).map(pair => togglePairs[pair] && <CurrencyPair key={pair} pair={pair} />)}
-          </div>
+          <CurrencySelector />
+          <CurrencyPairs pairs={currencyPairs}/>
         </div>
       : <p>Loading...</p>
     )   
